@@ -10,6 +10,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>17</maven.compiler.release>
 
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
     <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
@@ -21,6 +22,7 @@
 
     <main.verticle>com.github.tomboyo.vertxdemo.MainVerticle</main.verticle>
     <launcher.class>io.vertx.core.Launcher</launcher.class>
+    <image>vertx-demo:0.1.0</image>
   </properties>
 
   <dependencyManagement>
@@ -110,6 +112,35 @@
             <argument>${main.verticle}</argument>
           </arguments>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+          <to>
+            <image>${image}</image>
+          </to>
+          <container>
+            <mainClass>${launcher.class}</mainClass>
+            <args>
+              <arg>run</arg>
+              <arg>${main.verticle}</arg>
+            </args>
+            <ports>
+              <port>8080</port>
+            </ports>
+          </container>
+        </configuration>
+        <executions>
+          <execution>
+            <id>jib</id>
+            <goals>
+              <goal>dockerBuild</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

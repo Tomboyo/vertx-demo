@@ -21,6 +21,32 @@ To run your application:
 ./mvnw clean compile exec:java
 ```
 
+== Minikube
+
+Start the minikube cluster:
+```
+minikube start
+```
+
+Create a Docker image:
+```
+eval $(minikube docker-env)
+./mvnw package
+```
+
+(The package phase invokes the dockerBuild goal of the [jib](https://github.com/GoogleContainerTools/jib) plugin. The first build is slow, but subsequent builds are typically much faster.)
+
+Deploy to minikube:
+```
+kubectl apply -f ./minikube.yaml
+```
+
+Test the application:
+```
+curl $(minikube service vertx-demo-service --url)
+# Hello from Vert.x!
+```
+
 == Help
 
 * https://vertx.io/docs/[Vert.x Documentation]

@@ -4,6 +4,8 @@ distinguished_name     = req_distinguished_name
 attributes             = req_attributes
 prompt                 = no
 output_password        = password
+req_extensions         = extensions
+x509_extensions        = extensions
 
 [ req_distinguished_name ]
 C                      = US
@@ -11,8 +13,16 @@ ST                     = Test State or Province
 L                      = Test Locality
 O                      = Organization Name
 OU                     = Organizational Unit Name
-CN                     = Common Name
+CN                     = localhost
 emailAddress           = test@email.address
 
 [ req_attributes ]
 challengePassword              = password
+
+[ extensions ]
+subjectAltName = @alternate_names
+
+[ alternate_names ]
+DNS.1 = localhost
+DNS.2 = 127.0.0.1
+DNS.3 = ::1

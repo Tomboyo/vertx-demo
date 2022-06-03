@@ -1,0 +1,2 @@
+These are self-signed certificates suitable for testing. They were generated
+using the /scripts/gencert.sh script.

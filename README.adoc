@@ -6,19 +6,24 @@ This application was generated using http://start.vertx.io
 
 == Building
 
-To launch your tests:
+To launch tests:
 ```
 ./mvnw clean test
 ```
 
-To package your application:
+To package the application:
 ```
 ./mvnw clean package
 ```
 
-To run your application:
+To run the application:
 ```
-./mvnw clean compile exec:java
+./mvnw exec:java -Dmain.verticle.p12.path=etc/certs/server.p12
+```
+
+To make requests to the local deployment:
+```
+curl https://localhost:8080/ --cacert etc/certs/cert.pem
 ```
 
 == Minikube
@@ -43,9 +48,11 @@ kubectl apply -f ./minikube.yaml
 
 Test the application:
 ```
-curl $(minikube service vertx-demo-service --url)
+curl $(minikube service vertx-demo-service --url --https) --insecure
 # Hello from Vert.x!
 ```
+
+Unfortunately, the service running in minikube is assigned a random IP address that does not match any SAN of the application's SSL certificate, so we must pass the `--insecure` option.
 
 == Help
 

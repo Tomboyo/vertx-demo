@@ -15,10 +15,6 @@ local.properties
 .loadpath
 .recommenders
 
-### VSCode ###
-
-.vscode/
-
 # External tool builders
 .externalToolBuilders/
 
@@ -182,6 +178,7 @@ nbdist/
 .nb-gradle/
 
 ### VisualStudioCode ###
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

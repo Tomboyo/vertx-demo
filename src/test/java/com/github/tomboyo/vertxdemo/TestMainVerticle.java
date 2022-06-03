@@ -1,6 +1,8 @@
 package com.github.tomboyo.vertxdemo;
 
+import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonObject;
 import io.vertx.junit5.VertxExtension;
 import io.vertx.junit5.VertxTestContext;
 
@@ -13,7 +15,12 @@ public class TestMainVerticle {
 
   @BeforeEach
   void deploy_verticle(Vertx vertx, VertxTestContext testContext) {
-    vertx.deployVerticle(new MainVerticle(), testContext.succeeding(id -> testContext.completeNow()));
+    vertx.deployVerticle(
+        new MainVerticle(),
+        new DeploymentOptions().setConfig(
+            new JsonObject()
+              .put("main.verticle.p12.path", "etc/certs/server.p12")),
+        testContext.succeeding(id -> testContext.completeNow()));
   }
 
   @Test

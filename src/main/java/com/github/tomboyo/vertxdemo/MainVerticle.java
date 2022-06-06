@@ -45,7 +45,7 @@ public class MainVerticle extends AbstractVerticle {
 
   public int port() {
     if (port == -1) {
-      throw new IllegalStateException("Port cannot be retrieved because the verticle has not started");
+      throw new IllegalStateException("The verticle has not started");
     }
     return port;
   }

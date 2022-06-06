@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:14
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=demo
+  flyway:
+    depends_on:
+      - postgres
+    image: flyway/flyway:8.5.12
+    command: [
+      '-url=jdbc:postgresql://postgres:5432/demo',
+      '-schemas=public',
+      '-user=postgres',
+      '-password=postgres',
+      '-placeholders.password=password',
+      '-connectRetries=60',
+      'migrate'
+    ]
+    volumes:
+      - ./schema:/flyway/sql:ro,z

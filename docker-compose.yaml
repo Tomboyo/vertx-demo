@@ -17,6 +17,7 @@ services:
       '-schemas=public',
       '-user=postgres',
       '-password=postgres',
+      '-placeholders.username=username',
       '-placeholders.password=password',
       '-connectRetries=60',
       'migrate'

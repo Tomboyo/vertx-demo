@@ -1,5 +1,5 @@
-CREATE USER username WITH PASSWORD '${password}';
-GRANT CONNECT ON DATABASE demo TO username;
-GRANT USAGE ON SCHEMA public TO username;
-GRANT ALL ON ALL TABLES IN SCHEMA public TO username;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO username;
+create user ${username} with password '${password}';
+grant connect on database demo to username;
+grant usage on schema public to username;
+grant all on all tables in schema public to username;
+grant all on all sequences in schema public to username;

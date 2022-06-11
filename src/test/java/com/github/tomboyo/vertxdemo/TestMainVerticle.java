@@ -22,7 +22,7 @@ public class TestMainVerticle {
   private MainVerticle verticle;
 
   @BeforeEach
-  void deployVerticle(Vertx vertx, VertxTestContext testContext) throws Exception {
+  void deployVerticle(Vertx vertx, VertxTestContext testContext) {
     verticle = new MainVerticle();
     vertx.deployVerticle(
         verticle,
@@ -35,7 +35,7 @@ public class TestMainVerticle {
   }
 
   @Test
-  void sayHello(Vertx vertx, VertxTestContext testContext) throws Throwable {
+  void sayHello(Vertx vertx, VertxTestContext testContext) {
     vertx
         .createHttpClient(
             new HttpClientOptions()

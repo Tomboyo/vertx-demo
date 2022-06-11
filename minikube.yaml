@@ -49,9 +49,6 @@ spec:
         - name: configuration
           configMap:
             name: configuration
-            items:
-              - key: config.json
-                path: config.json
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -60,14 +57,10 @@ metadata:
   labels:
     app: vertx-demo
 data:
-  config.json: |
-    {
-      "main": {
-        "keystore": {
-          "password": "password"
-        }
-      }
-    }
+  config.yaml: |
+    main:
+      keystore:
+        password: password
 ---
 apiVersion: v1
 kind: Secret

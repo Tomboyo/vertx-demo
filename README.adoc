@@ -27,7 +27,7 @@ To run the application:
 To make requests to the local deployment:
 
 ```
-curl https://localhost:8080/ --cacert conf/certs/cert.pem
+curl https://localhost:8443/ --cacert conf/certs/cert.pem
 ```
 
 == Minikube

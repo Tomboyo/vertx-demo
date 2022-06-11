@@ -1,0 +1,5 @@
+main:
+  port: 8443
+  keystore:
+    path: conf/certs/server.p12
+    password: password

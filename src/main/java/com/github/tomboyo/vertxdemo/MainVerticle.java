@@ -1,11 +1,14 @@
 package com.github.tomboyo.vertxdemo;
 
 import io.vertx.config.ConfigRetriever;
+import io.vertx.config.ConfigRetrieverOptions;
+import io.vertx.config.ConfigStoreOptions;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.JksOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -28,7 +31,14 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private Future<MainConfig> configure() {
-    return ConfigRetriever.create(vertx)
+    return ConfigRetriever.create(
+            vertx,
+            new ConfigRetrieverOptions()
+                .addStore(
+                    new ConfigStoreOptions()
+                        .setType("file")
+                        .setFormat("yaml")
+                        .setConfig(new JsonObject().put("path", "conf/config.yaml"))))
         .getConfig()
         .map(json -> json.getJsonObject("main").mapTo(MainConfig.class));
   }

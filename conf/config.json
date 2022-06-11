@@ -1,9 +1,0 @@
-{
-  "main": {
-    "port": 8080,
-    "keystore": {
-      "path": "conf/certs/server.p12",
-      "password": "password"
-    }
-  }
-}

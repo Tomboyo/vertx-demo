@@ -3,44 +3,49 @@ package com.github.tomboyo.vertxdemo;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
-import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.JksOptions;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 
 public class MainVerticle extends AbstractVerticle {
 
   private int port = -1;
 
   @Override
-  public void start(Promise<Void> startPromise) throws Exception {
-    ConfigRetriever.create(vertx)
-    .getConfig()
-    .compose(this::launchHttpServer)
-    .onSuccess(httpServer -> {
-      startPromise.complete();
-      port = httpServer.actualPort();
-      System.out.println("HTTP server started on port " + port);
-    })
-    .onFailure(cause -> {
-      startPromise.fail(cause);
-    });
+  public void start(Promise<Void> startPromise) {
+    configure()
+        .compose(this::launchHttpServer)
+        .onSuccess(
+            httpServer -> {
+              startPromise.complete();
+              port = httpServer.actualPort();
+              System.out.println("HTTP server started on port " + port);
+            })
+        .onFailure(startPromise::fail);
   }
 
-  private Future<HttpServer> launchHttpServer(JsonObject config) {
-    var portConfig = config.getInteger("main.verticle.http.port", 8080);
-    return vertx.createHttpServer(httpServerOptions(config))
-              .requestHandler(this::defaultHandler)
-              .listen(portConfig);
+  private Future<MainConfig> configure() {
+    return ConfigRetriever.create(vertx)
+        .getConfig()
+        .map(json -> json.getJsonObject("main").mapTo(MainConfig.class));
   }
 
-  private void defaultHandler(HttpServerRequest req) {
-      req.response()
-          .putHeader("content-type", "text/plain")
-          .end("Hello from Vert.x!");
+  private Future<HttpServer> launchHttpServer(MainConfig config) {
+    var router = Router.router(vertx);
+    router.route().handler(this::defaultHandler);
+
+    var portConfig = config.port;
+    return vertx
+        .createHttpServer(httpServerOptions(config))
+        .requestHandler(router)
+        .listen(portConfig);
+  }
+
+  private void defaultHandler(RoutingContext ctx) {
+    ctx.response().putHeader("content-type", "text/plain").end("Hello from Vert.x!");
   }
 
   public int port() {
@@ -50,12 +55,11 @@ public class MainVerticle extends AbstractVerticle {
     return port;
   }
 
-  private HttpServerOptions httpServerOptions(JsonObject config) {
+  private HttpServerOptions httpServerOptions(MainConfig config) {
     return new HttpServerOptions()
         .setUseAlpn(true)
         .setSsl(true)
-        .setKeyStoreOptions(new JksOptions()
-            .setPath(config.getString("main.verticle.p12.path", "/etc/vertx-demo/certs/server.p12"))
-            .setPassword(config.getString("main.verticle.p12.password", "password")));
+        .setKeyStoreOptions(
+            new JksOptions().setPath(config.keystore.path).setPassword(config.keystore.password));
   }
 }

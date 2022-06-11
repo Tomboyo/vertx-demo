@@ -9,10 +9,10 @@ spec:
   selector:
     app: vertx-demo
   ports:
-    - name: http
+    - name: https
       protocol: TCP
-      port: 8080
-      targetPort: http
+      port: 8443
+      targetPort: https
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,15 +35,39 @@ spec:
           image: vertx-demo:latest
           imagePullPolicy: Never
           ports:
-            - name: http
-              containerPort: 8080
+            - name: https
+              containerPort: 443
           volumeMounts:
             - name: certificates
-              mountPath: /etc/vertx-demo/certs
+              mountPath: /app/conf/certs
+            - name: configuration
+              mountPath: /app/conf
       volumes:
         - name: certificates
           secret:
             secretName: certificates
+        - name: configuration
+          configMap:
+            name: configuration
+            items:
+              - key: config.json
+                path: config.json
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configuration
+  labels:
+    app: vertx-demo
+data:
+  config.json: |
+    {
+      "main": {
+        "keystore": {
+          "password": "password"
+        }
+      }
+    }
 ---
 apiVersion: v1
 kind: Secret

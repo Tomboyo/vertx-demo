@@ -1,5 +1,7 @@
 package com.github.tomboyo.vertxdemo;
 
+import static io.vertx.core.http.HttpMethod.GET;
+
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;
 import io.vertx.config.ConfigStoreOptions;
@@ -45,13 +47,36 @@ public class MainVerticle extends AbstractVerticle {
 
   private Future<HttpServer> launchHttpServer(MainConfig config) {
     var router = Router.router(vertx);
-    router.route().handler(this::defaultHandler);
+    configureRoutes(router);
 
     var portConfig = config.port;
     return vertx
         .createHttpServer(httpServerOptions(config))
         .requestHandler(router)
         .listen(portConfig);
+  }
+
+  private void configureRoutes(Router router) {
+    router
+        .route(GET, "/post")
+        .respond(
+            ctx ->
+                ctx.response()
+                    .putHeader("Content-Type", "text/html")
+                    .end(
+                        """
+                        <!doctype html>
+                        <html>
+                          <head>
+                            <meta charset="utf-8">
+                            <title>Hello World!</title>
+                          </head>
+                          <body>
+                            <h1>Hello, World!</h1>
+                            <p>Hello, World!</p>
+                          </body>
+                        </html>
+                        """));
   }
 
   private void defaultHandler(RoutingContext ctx) {

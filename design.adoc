@@ -1,0 +1,6 @@
+Write an application that "publishes" ADOC documents as HTML in a browser. The application will:
+
+. synchronize with a repository of ADOC files,
+. compile any files which have changed,
+. save compiled HTML to disc,
+. and render those HTML documents on-demand over HTTP.

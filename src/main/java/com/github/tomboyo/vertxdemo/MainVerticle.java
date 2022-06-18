@@ -13,15 +13,20 @@ import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.JksOptions;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.PoolOptions;
 
 public class MainVerticle extends AbstractVerticle {
 
   private int port = -1;
 
+  private PgPool pgPool;
+
   @Override
   public void start(Promise<Void> startPromise) {
     configure()
+        .onSuccess(this::initPgPool)
         .compose(this::launchHttpServer)
         .onSuccess(
             httpServer -> {
@@ -45,6 +50,10 @@ public class MainVerticle extends AbstractVerticle {
         .map(json -> json.getJsonObject("main").mapTo(MainConfig.class));
   }
 
+  private void initPgPool(MainConfig config) {
+    pgPool = PgPool.pool(vertx, PgConnectOptions.fromUri(config.postgres.uri), new PoolOptions());
+  }
+
   private Future<HttpServer> launchHttpServer(MainConfig config) {
     var router = Router.router(vertx);
     configureRoutes(router);
@@ -57,30 +66,8 @@ public class MainVerticle extends AbstractVerticle {
   }
 
   private void configureRoutes(Router router) {
-    router
-        .route(GET, "/post")
-        .respond(
-            ctx ->
-                ctx.response()
-                    .putHeader("Content-Type", "text/html")
-                    .end(
-                        """
-                        <!doctype html>
-                        <html>
-                          <head>
-                            <meta charset="utf-8">
-                            <title>Hello World!</title>
-                          </head>
-                          <body>
-                            <h1>Hello, World!</h1>
-                            <p>Hello, World!</p>
-                          </body>
-                        </html>
-                        """));
-  }
-
-  private void defaultHandler(RoutingContext ctx) {
-    ctx.response().putHeader("content-type", "text/plain").end("Hello from Vert.x!");
+    var postController = new PostController(pgPool);
+    router.route(GET, "/posts/:id").handler(postController::handleGetPost);
   }
 
   public int port() {

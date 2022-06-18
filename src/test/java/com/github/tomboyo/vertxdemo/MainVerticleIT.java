@@ -1,12 +1,9 @@
 package com.github.tomboyo.vertxdemo;
 
-import static io.vertx.core.http.HttpMethod.GET;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.PemTrustOptions;
@@ -16,8 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static io.vertx.core.http.HttpMethod.GET;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 @ExtendWith(VertxExtension.class)
-public class TestMainVerticle {
+public class MainVerticleIT {
 
   private MainVerticle verticle;
 
@@ -35,7 +35,7 @@ public class TestMainVerticle {
   }
 
   @Test
-  void sayHello(Vertx vertx, VertxTestContext testContext) {
+  void getPost(Vertx vertx, VertxTestContext testContext) {
     vertx
         .createHttpClient(
             new HttpClientOptions()
@@ -46,15 +46,13 @@ public class TestMainVerticle {
                 .setPort(verticle.port())
                 .setHost("localhost")
                 .setMethod(GET)
-                .setURI("/"))
-        .compose(req -> req.send().compose(HttpClientResponse::body))
+                .setURI("/posts/1"))
+        .compose(HttpClientRequest::send)
         .onComplete(
             testContext.succeeding(
-                buffer ->
-                    testContext.verify(
-                        () -> {
-                          assertEquals("Hello from Vert.x!", buffer.toString());
-                          testContext.completeNow();
-                        })));
+                resp -> {
+                  assertEquals(200, resp.statusCode(), "Should return the default post with id 1");
+                  testContext.completeNow();
+                }));
   }
 }

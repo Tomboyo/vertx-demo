@@ -3,3 +3,5 @@ main:
   keystore:
     path: conf/certs/server.p12
     password: password
+  postgres:
+    uri: postgresql://username:password@localhost:5432/demo

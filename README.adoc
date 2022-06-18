@@ -6,61 +6,24 @@ This application was generated using http://start.vertx.io
 
 == Building
 
-To launch tests:
+Test and package the application:
 
 ```
-./mvnw clean test
+./mvnw clean verify
 ```
 
-To package the application:
+Run the application:
 
 ```
-./mvnw clean package
-```
-
-To run the application:
-
-```
+docker-compose up
 ./mvnw exec:java
 ```
 
 To make requests to the local deployment:
 
 ```
-curl https://localhost:8443/ --cacert conf/certs/cert.pem
+curl https://localhost:8443/posts/1 --cacert conf/certs/cert.pem
 ```
-
-== Minikube
-
-Start the minikube cluster:
-
-```
-minikube start
-```
-
-Create a Docker image:
-
-```
-eval $(minikube docker-env)
-./mvnw package
-```
-
-(The package phase invokes the dockerBuild goal of the [jib](https://github.com/GoogleContainerTools/jib) plugin. The first build is slow, but subsequent builds are typically much faster.)
-
-Deploy to minikube:
-
-```
-kubectl apply -f ./minikube.yaml
-```
-
-Test the application:
-
-```
-curl $(minikube service vertx-demo-service --url --https) --insecure
-# Hello from Vert.x!
-```
-
-Unfortunately, the service running in minikube is assigned a random IP address that does not match any SAN of the application's SSL certificate, so we must pass the `--insecure` option.
 
 == Help
 

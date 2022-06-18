@@ -10,9 +10,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class MainConfig {
   public int port = 443;
   public Keystore keystore = new Keystore();
+  public Postgres postgres = new Postgres();
 
   public static class Keystore {
     public String path = "conf/certs/server.p12";
     public String password;
+  }
+
+  public static class Postgres {
+    public String uri;
   }
 }
